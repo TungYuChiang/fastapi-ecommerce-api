@@ -1,0 +1,55 @@
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from sqlalchemy.orm import Session
+from pydantic import BaseModel
+from typing import Optional
+
+from app.database import get_db
+from app.models.order import PaymentMethod
+from app.services.payment_service import PaymentService
+from app.tasks.order_tasks import verify_payment_status
+
+router = APIRouter(prefix="/payments", tags=["payments"])
+
+
+class PaymentRequest(BaseModel):
+    order_id: int
+    payment_method: PaymentMethod
+
+
+class PaymentVerificationRequest(BaseModel):
+    order_id: int
+
+
+@router.post("/process", status_code=status.HTTP_200_OK)
+def process_payment(
+    payment_data: PaymentRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
+    result = PaymentService.process_payment(
+        db, payment_data.order_id, payment_data.payment_method
+    )
+
+    if not result["success"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=result["message"]
+        )
+
+    # 如果支付成功，在後台異步驗證支付狀態
+    if result["success"]:
+        # 使用Celery任務異步驗證支付狀態
+        verify_payment_status.delay(payment_data.order_id)
+
+    return result
+
+
+@router.get("/status/{order_id}", status_code=status.HTTP_200_OK)
+def check_payment_status(order_id: int, db: Session = Depends(get_db)):
+    result = PaymentService.verify_payment_status(db, order_id)
+
+    if not result["verified"]:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=result["message"]
+        )
+
+    return result

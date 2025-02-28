@@ -4,7 +4,12 @@ from app.schemas.product import ProductSchema
 
 
 def create_product(db: Session, product: ProductSchema) -> Product:
-    new_product = Product(id=product.id, name=product.name, description=product.description, price=product.price)
+    new_product = Product(
+        id=product.id,
+        name=product.name,
+        description=product.description,
+        price=product.price,
+    )
     db.add(new_product)
     db.commit()
     db.refresh(new_product)
@@ -36,4 +41,4 @@ def delete_product(db: Session, product_id: int) -> bool:
         db.delete(product)
         db.commit()
         return True
-    return False 
+    return False
