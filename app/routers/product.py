@@ -5,7 +5,7 @@ from app.models.product import Product
 from app.schemas.product import ProductSchema
 from app.database import get_db
 from app.services.product import create_product, get_products, get_product, update_product, delete_product
-from app.dependencies import get_current_user
+from app.services.user import get_current_user
 from app.models.user import User
 
 router = APIRouter()
