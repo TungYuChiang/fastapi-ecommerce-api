@@ -1,7 +1,9 @@
 import pika
 import json
 import logging
+import os
 from typing import Callable, Dict, Any
+from urllib.parse import urlparse
 
 logger = logging.getLogger(__name__)
 
@@ -9,11 +11,16 @@ logger = logging.getLogger(__name__)
 class RabbitMQClient:
     """RabbitMQ 客戶端類，用於處理消息的發送和接收"""
 
-    def __init__(self, host="localhost", port=5672, username="guest", password="guest"):
-        self.host = host
-        self.port = port
-        self.username = username
-        self.password = password
+    def __init__(self, rabbitmq_url=None):
+        # 從環境變數獲取 RabbitMQ URL，如果不存在則使用默認值
+        self.rabbitmq_url = rabbitmq_url or os.environ.get("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
+        
+        # 解析 URL
+        url = urlparse(self.rabbitmq_url)
+        self.host = url.hostname or "localhost"
+        self.port = url.port or 5672
+        self.username = url.username or "guest"
+        self.password = url.password or "guest"
         self.connection = None
         self.channel = None
 

@@ -9,6 +9,56 @@
 - **消息隊列**: RabbitMQ 處理訂單事件
 - **任務處理**: Celery + Redis 處理異步任務
 
+## 使用 Docker 運行
+
+### 前置需求
+
+- Docker
+- Docker Compose
+
+### 啟動所有服務
+
+```bash
+docker-compose up -d
+```
+
+這將啟動以下服務:
+- PostgreSQL 數據庫
+- Redis 服務器
+- RabbitMQ 消息隊列
+- FastAPI 應用程式
+- Celery Worker
+- RabbitMQ 消費者
+
+### 查看日誌
+
+```bash
+# 查看所有服務的日誌
+docker-compose logs -f
+
+# 查看特定服務的日誌
+docker-compose logs -f api
+docker-compose logs -f celery_worker
+docker-compose logs -f rabbitmq_consumer
+```
+
+### 停止服務
+
+```bash
+docker-compose down
+```
+
+### 重建服務
+
+如果您修改了代碼或配置，需要重建服務:
+
+```bash
+docker-compose build
+docker-compose up -d
+```
+
+## 本地開發環境
+
 ## 前置需求
 
 - Python 3.8+

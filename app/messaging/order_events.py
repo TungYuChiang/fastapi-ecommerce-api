@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.messaging.rabbitmq import RabbitMQClient
 from app.tasks.order_tasks import verify_payment_status, send_order_confirmation_email
 import logging
@@ -29,7 +30,7 @@ class OrderEventProducer:
             self.rabbitmq.connect()
 
             # 聲明交換機
-            self.rabbitmq.declare_exchange(ORDER_EXCHANGE, "topic")
+            self.rabbitmq.declare_exchange(ORDER_EXCHANGE, "direct")
 
             # 聲明隊列
             self.rabbitmq.declare_queue(ORDER_CREATED_QUEUE)
@@ -171,7 +172,3 @@ class OrderEventConsumer:
     def close(self):
         """關閉連接"""
         self.rabbitmq.close()
-
-
-# 確保導入消息處理所需的模塊
-from datetime import datetime

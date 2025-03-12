@@ -53,7 +53,6 @@ class OrderService:
             # 計算總額
             total_amount += product.price * item.quantity
 
-        # 更新訂單總額
         db_order.total_amount = total_amount
 
         db.commit()
