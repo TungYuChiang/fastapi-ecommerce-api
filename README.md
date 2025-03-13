@@ -9,7 +9,17 @@
 - **消息隊列**: RabbitMQ 處理訂單事件
 - **任務處理**: Celery + Redis 處理異步任務
 
-## 使用 Docker 運行
+## 技術堆棧
+
+- **FastAPI**: 高性能 API 框架
+- **SQLAlchemy**: ORM 數據庫操作
+- **Pydantic**: 數據驗證和序列化
+- **Celery**: 分散式任務隊列
+- **Redis**: 緩存和 Celery 後端
+- **RabbitMQ**: 消息隊列
+- **Docker & Docker Compose**: 容器化部署
+
+## 使用 Docker 運行 (建議)
 
 ### 前置需求
 
@@ -59,44 +69,66 @@ docker-compose up -d
 
 ## 本地開發環境
 
-## 前置需求
+### 前置需求
 
 - Python 3.8+
 - PostgreSQL
 - Redis
 - RabbitMQ
 
-## 安裝依賴
+### 安裝依賴
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 環境配置
+### 環境配置
 
-1. 確保 PostgreSQL 已啟動並創建數據庫:
+1. 創建 `.env` 文件並設置以下環境變數:
+   ```
+   # 數據庫設定
+   POSTGRES_USER=eadmin
+   POSTGRES_PASSWORD=123456
+   POSTGRES_DB=ecommerce
+   DATABASE_URL=postgresql://eadmin:123456@localhost:5432/ecommerce
+
+   # Redis 設定
+   REDIS_URL=redis://localhost:6379/0
+
+   # RabbitMQ 設定
+   RABBITMQ_USER=guest
+   RABBITMQ_PASSWORD=guest
+   RABBITMQ_URL=amqp://guest:guest@localhost:5672/
+
+   # 應用程式設定
+   APP_PORT=8000
+   APP_HOST=0.0.0.0
+   ```
+
+2. 確保 PostgreSQL 已啟動並創建數據庫:
    ```
    createdb ecommerce
    ```
 
-2. 確保 Redis 服務器已啟動:
+3. 確保 Redis 服務器已啟動:
    ```
    redis-server
    ```
 
-3. 確保 RabbitMQ 服務器已啟動:
+4. 確保 RabbitMQ 服務器已啟動:
    ```
    rabbitmq-server
    ```
 
-## 數據庫遷移
+## 數據庫初始化
 
-使用 Alembic 進行數據庫遷移:
+使用內建的創建表格功能:
 
 ```bash
-alembic revision --autogenerate -m "Initial"
-alembic upgrade head
+python create_tables.py
 ```
+
+或者直接啟動應用程式，它會自動創建所需的表格。
 
 ## 啟動服務
 
@@ -116,7 +148,7 @@ python worker.py
 
 啟動所有消費者:
 ```bash
-python consumer.py
+python consumer.py --queue all
 ```
 
 或者啟動特定消費者:
@@ -175,10 +207,35 @@ http://localhost:8000/docs
 5. Celery Worker 驗證支付狀態
 6. 客戶可以查詢訂單狀態 (`GET /orders/{order_id}`)
 
+## 項目結構
+
+```
+ecommerce/
+├── app/
+│   ├── models/       # 數據庫模型
+│   ├── routers/      # API 路由
+│   ├── schemas/      # Pydantic 模型
+│   ├── services/     # 業務邏輯
+│   ├── tasks/        # Celery 任務
+│   ├── messaging/    # 消息處理
+│   ├── celery_app.py # Celery 配置
+│   └── database.py   # 數據庫連接
+├── main.py           # 應用程式入口點
+├── worker.py         # Celery Worker 啟動
+├── consumer.py       # RabbitMQ 消費者
+├── create_tables.py  # 數據庫初始化
+├── requirements.txt  # 依賴管理
+├── Dockerfile        # Docker 配置
+├── docker-compose.yml # Docker Compose 配置
+└── .env              # 環境變數
+```
+
 ## 擴展建議
 
 1. 加入產品庫存管理
 2. 實現完善的用戶身份驗證
 3. 添加購物車功能
 4. 實現真實的支付網關整合
-5. 添加物流追蹤功能 
+5. 添加物流追蹤功能
+6. 實現用戶評價和評論系統
+7. 添加產品分類和搜索功能 
