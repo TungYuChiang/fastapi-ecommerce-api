@@ -1,4 +1,13 @@
 #!/usr/bin/env python
+"""
+Celery Worker 啟動腳本
+"""
+import sys
+import os
+
+# 將項目根目錄添加到 Python 路徑
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from app.celery_app import celery_app
 
 if __name__ == "__main__":
@@ -16,4 +25,4 @@ if __name__ == "__main__":
     celery_app.worker_main(argv)
 
 # 要啟動此worker，只需運行:
-# python worker.py
+# python scripts/worker.py

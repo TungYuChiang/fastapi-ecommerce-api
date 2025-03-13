@@ -1,6 +1,16 @@
+#!/usr/bin/env python
+"""
+數據庫表格創建腳本
+"""
+import logging
+import sys
+import os
+
+# 將項目根目錄添加到 Python 路徑
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from app.database import engine
 from app.models.base import Base
-import logging
 
 # 確保所有模型都被導入，以便 Base.metadata 能夠收集所有表格定義
 from app.models.user import User
@@ -25,3 +35,6 @@ def create_tables():
 
 if __name__ == "__main__":
     create_tables()
+
+# 要創建表格，運行:
+# python scripts/create_tables.py

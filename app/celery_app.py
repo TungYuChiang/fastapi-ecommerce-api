@@ -1,14 +1,11 @@
-import os
 from celery import Celery
-
-# 從環境變數獲取 Redis URL，如果不存在則使用默認值
-redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+from app.config.settings import REDIS_URL
 
 # 創建Celery實例
 celery_app = Celery(
     "ecommerce",
-    broker=redis_url,
-    backend=redis_url,
+    broker=REDIS_URL,
+    backend=REDIS_URL,
     include=["app.tasks.order_tasks"],
 )
 

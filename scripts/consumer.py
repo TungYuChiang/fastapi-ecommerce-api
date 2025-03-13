@@ -1,7 +1,16 @@
 #!/usr/bin/env python
+"""
+RabbitMQ 消息消費者啟動腳本
+"""
 import logging
 import argparse
 import time
+import sys
+import os
+
+# 將項目根目錄添加到 Python 路徑
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from app.messaging.order_events import OrderEventConsumer
 
 # 配置日誌
@@ -88,3 +97,6 @@ if __name__ == "__main__":
             logger.info("收到中斷信號，請等待所有消費者關閉...")
 
         logger.info("所有消費者已關閉")
+
+# 要啟動此消費者，運行:
+# python scripts/consumer.py --queue all

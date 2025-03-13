@@ -103,6 +103,11 @@ pip install -r requirements.txt
    # 應用程式設定
    APP_PORT=8000
    APP_HOST=0.0.0.0
+   
+   # JWT 設定
+   JWT_SECRET=your-secret-key
+   JWT_ALGORITHM=HS256
+   JWT_EXPIRATION=3600
    ```
 
 2. 確保 PostgreSQL 已啟動並創建數據庫:
@@ -122,39 +127,53 @@ pip install -r requirements.txt
 
 ## 數據庫初始化
 
-使用內建的創建表格功能:
+使用統一命令行介面創建表格:
 
 ```bash
-python create_tables.py
+python run.py create-tables
 ```
-
-或者直接啟動應用程式，它會自動創建所需的表格。
 
 ## 啟動服務
 
-### 啟動 Web API 服務器
+### 使用統一命令行介面
 
+啟動所有服務:
 ```bash
-uvicorn main:app --reload
+python run.py all
 ```
 
-### 啟動 Celery Worker
+或者單獨啟動各個服務:
 
 ```bash
-python worker.py
+# 啟動 API 服務器
+python run.py api
+
+# 啟動 Celery Worker
+python run.py worker
+
+# 啟動 RabbitMQ 消費者 (所有隊列)
+python run.py consumer
+
+# 啟動特定 RabbitMQ 消費者
+python run.py consumer --queue order_created
+python run.py consumer --queue payment_processed
 ```
 
-### 啟動 RabbitMQ 消息消費者
+### 直接啟動各個服務
 
-啟動所有消費者:
-```bash
-python consumer.py --queue all
-```
+如果需要，也可以直接啟動各個服務:
 
-或者啟動特定消費者:
 ```bash
-python consumer.py --queue order_created
-python consumer.py --queue payment_processed
+# 啟動 API 服務器
+python api.py
+# 或者使用 uvicorn
+uvicorn api:app --reload
+
+# 啟動 Celery Worker
+python scripts/worker.py
+
+# 啟動 RabbitMQ 消費者
+python scripts/consumer.py --queue all
 ```
 
 ## 測試 API
@@ -162,7 +181,12 @@ python consumer.py --queue payment_processed
 ### 使用測試腳本
 
 ```bash
-python test_order_flow.py
+python run.py test
+```
+
+或者直接運行測試腳本:
+```bash
+python tests/test_order_flow.py
 ```
 
 ### 使用 Swagger UI
@@ -212,22 +236,29 @@ http://localhost:8000/docs
 ```
 ecommerce/
 ├── app/
-│   ├── models/       # 數據庫模型
-│   ├── routers/      # API 路由
-│   ├── schemas/      # Pydantic 模型
-│   ├── services/     # 業務邏輯
-│   ├── tasks/        # Celery 任務
-│   ├── messaging/    # 消息處理
-│   ├── celery_app.py # Celery 配置
-│   └── database.py   # 數據庫連接
-├── main.py           # 應用程式入口點
-├── worker.py         # Celery Worker 啟動
-├── consumer.py       # RabbitMQ 消費者
-├── create_tables.py  # 數據庫初始化
-├── requirements.txt  # 依賴管理
-├── Dockerfile        # Docker 配置
-├── docker-compose.yml # Docker Compose 配置
-└── .env              # 環境變數
+│   ├── config/          # 配置模組
+│   ├── models/          # 數據庫模型
+│   ├── routers/         # API 路由
+│   ├── schemas/         # Pydantic 模型
+│   ├── services/        # 業務邏輯
+│   ├── tasks/           # Celery 任務
+│   ├── messaging/       # 消息處理
+│   ├── __init__.py      # 應用程式包初始化
+│   ├── celery_app.py    # Celery 配置
+│   └── database.py      # 數據庫連接
+├── scripts/             # 腳本和工具
+│   ├── worker.py        # Celery Worker 啟動
+│   ├── consumer.py      # RabbitMQ 消費者
+│   └── create_tables.py # 數據庫初始化
+├── tests/               # 測試目錄
+│   ├── __init__.py
+│   └── test_order_flow.py
+├── api.py               # API 服務入口點
+├── run.py               # 統一命令行介面
+├── requirements.txt     # 依賴管理
+├── Dockerfile           # Docker 配置
+├── docker-compose.yml   # Docker Compose 配置
+└── .env                 # 環境變數
 ```
 
 ## 擴展建議

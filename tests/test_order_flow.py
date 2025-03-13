@@ -1,8 +1,15 @@
 #!/usr/bin/env python
+"""
+訂單流程整合測試
+"""
 import requests
 import json
 import time
 import sys
+import os
+
+# 將項目根目錄添加到 Python 路徑
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # API基礎URL
 BASE_URL = "http://localhost:8000"
@@ -137,3 +144,6 @@ def test_order_flow():
 
 if __name__ == "__main__":
     test_order_flow()
+
+# 要運行此測試，執行:
+# python tests/test_order_flow.py

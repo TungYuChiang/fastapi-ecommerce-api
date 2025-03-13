@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+"""
+電子商務平台 API 服務入口點
+"""
 from fastapi import FastAPI
 from app.routers import product
 from app.routers import user
@@ -13,17 +17,39 @@ from app.models.user import User
 from app.models.product import Product
 from app.models.order import Order, OrderItem
 
-app = FastAPI()
+# 創建 FastAPI 應用程式實例
+app = FastAPI(
+    title="電子商務平台 API",
+    description="提供商品管理、用戶管理、訂單處理和支付功能的 API",
+    version="1.0.0",
+)
 
 # 創建所有表格
 Base.metadata.create_all(bind=engine)
 
-app.include_router(product.router)
-app.include_router(user.router)
-app.include_router(order.router)
-app.include_router(payment.router)
+# 註冊路由
+app.include_router(product.router, tags=["商品"])
+app.include_router(user.router, tags=["用戶"])
+app.include_router(order.router, tags=["訂單"])
+app.include_router(payment.router, tags=["支付"])
 
 
-@app.get("/")
+@app.get("/", tags=["根"])
 async def read_root():
-    return {"Hello": "World"}
+    """
+    API 根路徑，返回歡迎信息
+    """
+    return {"message": "歡迎使用電子商務平台 API", "version": "1.0.0"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    from app.config.settings import APP_HOST, APP_PORT
+
+    # 啟動 API 服務器
+    uvicorn.run(app, host=APP_HOST, port=APP_PORT)
+
+# 要啟動 API 服務器，運行:
+# python api.py
+# 或者使用 uvicorn:
+# uvicorn api:app --reload
