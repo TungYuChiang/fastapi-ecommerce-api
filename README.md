@@ -8,6 +8,8 @@
 - **數據庫**: PostgreSQL 存儲應用數據
 - **消息隊列**: RabbitMQ 處理訂單事件
 - **任務處理**: Celery + Redis 處理異步任務
+- **測試框架**: Pytest 提供 API 測試覆蓋
+- **錯誤處理**: 統一的錯誤處理機制
 
 ## 技術堆棧
 
@@ -17,6 +19,7 @@
 - **Celery**: 分散式任務隊列
 - **Redis**: 緩存和 Celery 後端
 - **RabbitMQ**: 消息隊列
+- **Pytest**: 測試框架
 - **Docker & Docker Compose**: 容器化部署
 
 ## 使用 Docker 運行 (建議)
@@ -176,25 +179,57 @@ python scripts/worker.py
 python scripts/consumer.py --queue all
 ```
 
-## 測試 API
+## 測試
 
-### 使用測試腳本
+### 使用 Docker 環境運行測試
+
+確保 Docker 容器已運行，然後執行：
 
 ```bash
-python run.py test
+./scripts/run_tests.sh
 ```
 
-或者直接運行測試腳本:
+### 本地運行測試
+
 ```bash
-python tests/test_order_flow.py
+# 運行所有測試
+pytest
+
+# 運行特定測試文件
+pytest tests/api/test_product_api.py
+
+# 運行特定類型的測試
+pytest -m api
+
+# 生成測試覆蓋率報告
+pytest --cov=app
 ```
 
-### 使用 Swagger UI
+詳細的測試說明請參考 [測試文檔](tests/README.md)。
 
-訪問 Swagger UI 進行交互式測試:
+## 錯誤處理機制
+
+本專案實現了統一的錯誤處理機制，透過自定義異常類處理各種 API 錯誤情況。所有錯誤響應均採用標準格式：
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "ERR_XXX",
+    "message": "錯誤訊息",
+    "detail": "詳細信息"
+  }
+}
 ```
-http://localhost:8000/docs
-```
+
+主要錯誤類型：
+
+- `NotFoundError` (404): 請求的資源不存在
+- `ValidationError` (422): 請求數據驗證失敗
+- `AuthenticationError` (401): 未認證或認證失敗
+- `AuthorizationError` (403): 認證成功但無訪問權限
+- `ConflictError` (409): 資源衝突
+- `ServerError` (500): 伺服器內部錯誤
 
 ## API 端點
 
@@ -245,14 +280,15 @@ ecommerce/
 │   ├── messaging/       # 消息處理
 │   ├── __init__.py      # 應用程式包初始化
 │   ├── celery_app.py    # Celery 配置
+│   ├── errors.py        # 錯誤處理機制
 │   └── database.py      # 數據庫連接
 ├── scripts/             # 腳本和工具
 │   ├── worker.py        # Celery Worker 啟動
-│   ├── consumer.py      # RabbitMQ 消費者
-│   └── create_tables.py # 數據庫初始化
+│   └── run_tests.sh     # 測試執行腳本
 ├── tests/               # 測試目錄
-│   ├── __init__.py
-│   └── test_order_flow.py
+│   ├── api/             # API 測試
+│   ├── conftest.py      # 測試固件
+│   └── README.md        # 測試文檔
 ├── api.py               # API 服務入口點
 ├── run.py               # 統一命令行介面
 ├── requirements.txt     # 依賴管理

@@ -2,11 +2,19 @@
 """
 電子商務平台 API 服務入口點
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.exceptions import RequestValidationError
 from app.routers import product
 from app.routers import user
 from app.routers import order
 from app.routers import payment
+from app.errors import (
+    BaseAPIError, 
+    api_exception_handler, 
+    http_exception_handler, 
+    validation_exception_handler,
+    default_exception_handler
+)
 
 # 導入所需模型和引擎
 from app.models.base import Base
@@ -23,6 +31,12 @@ app = FastAPI(
     description="提供商品管理、用戶管理、訂單處理和支付功能的 API",
     version="1.0.0",
 )
+
+# 註冊錯誤處理器
+app.add_exception_handler(BaseAPIError, api_exception_handler)
+app.add_exception_handler(HTTPException, http_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(Exception, default_exception_handler)
 
 # 創建所有表格
 Base.metadata.create_all(bind=engine)

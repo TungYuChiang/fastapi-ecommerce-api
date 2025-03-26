@@ -12,6 +12,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# 創建測試報告目錄
+RUN mkdir -p /app/test-reports
+
 # 複製應用程式代碼
 COPY . .
 
