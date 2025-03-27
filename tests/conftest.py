@@ -4,6 +4,7 @@ Pytest configuration file containing test fixtures
 import asyncio
 import os
 import pytest
+import uuid
 from typing import AsyncGenerator, Generator
 from fastapi import FastAPI
 from httpx import AsyncClient
@@ -75,11 +76,9 @@ def product_data():
     Sample product data for tests.
     """
     return {
-        "name": "Test Product",
+        "name": f"Test Product {uuid.uuid4().hex[:8]}",
         "description": "A product for testing",
-        "price": 99.99,
-        "stock": 100,
-        "category": "Test Category"
+        "price": 99.99
     }
 
 

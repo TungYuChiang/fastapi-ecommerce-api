@@ -14,9 +14,8 @@ TOKEN_EXPIRE_MINUTES = 30
 
 async def get_auth_token(client: AsyncClient) -> str:
     """
-    Create a test user and get authentication token
+    Ensure test user exists and get authentication token
     """
-    # Register a test user
     test_user = {
         "username": "test_auth_user",
         "email": "testauth@example.com",
@@ -24,11 +23,24 @@ async def get_auth_token(client: AsyncClient) -> str:
         "full_name": "Test Auth User"
     }
     
-    # 檢查實際 API 路徑
-    register_paths = ["/users/register", "/register"]
     login_paths = ["/users/login", "/login"]
     
-    # 嘗試不同的路徑註冊
+    # 嘗試登入，若失敗則註冊
+    for path in login_paths:
+        try:
+            login_data = {
+                "username": test_user["username"],
+                "password": test_user["password"]
+            }
+            login_response = await client.post(path, json=login_data)
+            if login_response.status_code == 200:
+                print(f"Login path successful: {path}")
+                return login_response.json().get("access_token", "")
+        except Exception as e:
+            print(f"Error trying login path {path}: {str(e)}")
+    
+    # 如果登入失敗，嘗試註冊
+    register_paths = ["/users/register", "/register"]
     for path in register_paths:
         try:
             register_response = await client.post(path, json=test_user)
@@ -38,7 +50,7 @@ async def get_auth_token(client: AsyncClient) -> str:
         except Exception as e:
             print(f"Error trying path {path}: {str(e)}")
     
-    # 嘗試不同的路徑登入
+    # 再次嘗試登入
     for path in login_paths:
         try:
             login_data = {

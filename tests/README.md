@@ -42,38 +42,6 @@ tests/
 
 ## 運行測試
 
-### 本地運行測試
-
-1. 確保安裝了所有依賴項：
-
-```bash
-pip install -r requirements.txt
-```
-
-2. 運行所有測試：
-
-```bash
-pytest
-```
-
-3. 運行特定測試文件：
-
-```bash
-pytest tests/api/test_product_api.py
-```
-
-4. 運行特定標記的測試：
-
-```bash
-pytest -m api
-```
-
-5. 生成測試覆蓋率報告：
-
-```bash
-pytest --cov=app
-```
-
 ### 在 Docker 中運行測試
 
 使用以下命令在現有的 Docker 環境中運行測試：

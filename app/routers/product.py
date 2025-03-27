@@ -13,11 +13,12 @@ from app.services.product import (
 )
 from app.services.user import get_current_user
 from app.models.user import User
+from app.errors import NotFoundError
 
 router = APIRouter()
 
 
-@router.post("/products/", response_model=ProductSchema)
+@router.post("/products/", response_model=ProductSchema, status_code=201)
 async def create_product_endpoint(
     product: ProductSchema,
     db: Session = Depends(get_db),
@@ -35,7 +36,7 @@ async def read_products_endpoint(db: Session = Depends(get_db)):
 async def read_product_endpoint(product_id: int, db: Session = Depends(get_db)):
     product = get_product(db, product_id)
     if product is None:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise NotFoundError(message="Product not found")
     return product
 
 
@@ -48,11 +49,11 @@ async def update_product_endpoint(
 ):
     updated_product = update_product(db, product_id, product)
     if updated_product is None:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise NotFoundError(message="Product not found")
     return updated_product
 
 
-@router.delete("/products/{product_id}")
+@router.delete("/products/{product_id}", status_code=204)
 async def delete_product_endpoint(
     product_id: int,
     db: Session = Depends(get_db),
@@ -60,5 +61,5 @@ async def delete_product_endpoint(
 ):
     success = delete_product(db, product_id)
     if not success:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise NotFoundError(message="Product not found")
     return {"detail": "Product deleted"}

@@ -7,6 +7,7 @@ from app.database import get_db
 from app.models.order import OrderStatus
 from app.schemas.order import OrderCreate, OrderResponse, OrderListResponse
 from app.services.order_service import OrderService
+from app.errors import NotFoundError
 
 
 # 假設我們有一個簡單的用戶驗證機制
@@ -39,7 +40,7 @@ def get_order(
 ):
     order = OrderService.get_order_by_id(db, order_id, current_user_id)
     if not order:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="訂單未找到")
+        raise NotFoundError(message="Order not found")
     return order
 
 

@@ -15,3 +15,8 @@ venv/
 # 忽略 Redis 數據文件
 dump.rdb
 
+# 忽略測試覆蓋率文件
+.coverage
+htmlcov/
+.pytest_cache/
+

@@ -42,7 +42,7 @@ async def test_create_product(client: AsyncClient, product_data):
 
 @pytest.mark.api
 @pytest.mark.asyncio
-async def test_get_product_by_id(client: AsyncClient):
+async def test_get_product_by_id(client: AsyncClient, product_data):
     """
     Test getting a product by ID
     """
@@ -50,14 +50,6 @@ async def test_get_product_by_id(client: AsyncClient):
         # Get auth headers
         headers = await get_auth_headers(client)
         
-        # First create a product
-        product_data = {
-            "name": "Test Get Product",
-            "description": "A product for testing get endpoint",
-            "price": 49.99,
-            "stock": 50,
-            "category": "Test"
-        }
         create_response = await client.post("/products/", json=product_data, headers=headers)
         created_product = create_response.json()
         
@@ -72,38 +64,32 @@ async def test_get_product_by_id(client: AsyncClient):
 
 @pytest.mark.api
 @pytest.mark.asyncio
-async def test_update_product(client: AsyncClient):
+async def test_update_product(client: AsyncClient, product_data):
     """
     Test updating a product
     """
-    async with AsyncClient(app=app, base_url="http://localhost:8000") as client:
-        # Get auth headers
-        headers = await get_auth_headers(client)
-        
-        # First create a product
-        product_data = {
-            "name": "Test Update Product",
-            "description": "A product for testing update endpoint",
-            "price": 79.99,
-            "stock": 30,
-            "category": "Test"
-        }
-        create_response = await client.post("/products/", json=product_data, headers=headers)
-        created_product = create_response.json()
-        product_id = created_product["id"]
-        
-        # Update the product
-        update_data = {
-            "name": "Updated Product Name",
-            "price": 89.99
-        }
-        response = await client.patch(f"/products/{product_id}", json=update_data, headers=headers)
-        assert response.status_code == 200
-        updated_product = response.json()
-        assert updated_product["id"] == product_id
-        assert updated_product["name"] == update_data["name"]
-        assert updated_product["price"] == update_data["price"]
-        assert updated_product["description"] == product_data["description"]  # Unchanged
+    # Get auth headers
+    headers = await get_auth_headers(client)
+    
+    # First create a product
+    create_response = await client.post("/products/", json=product_data, headers=headers)
+    assert create_response.status_code == 201
+    created_product = create_response.json()
+    product_id = created_product["id"]
+    
+    # Update the product - 使用 PUT 而非 PATCH，以符合路由定義
+    update_data = {
+        "name": "Updated Product Name",
+        "price": 89.99,
+        "description": product_data["description"]  # 必須包含所有必要欄位
+    }
+    response = await client.put(f"/products/{product_id}", json=update_data, headers=headers)
+    assert response.status_code == 200
+    updated_product = response.json()
+    assert updated_product["id"] == product_id
+    assert updated_product["name"] == update_data["name"]
+    assert updated_product["price"] == update_data["price"]
+    assert updated_product["description"] == product_data["description"]
 
 
 @pytest.mark.api
@@ -120,9 +106,7 @@ async def test_delete_product(client: AsyncClient):
         product_data = {
             "name": "Test Delete Product",
             "description": "A product for testing delete endpoint",
-            "price": 29.99,
-            "stock": 10,
-            "category": "Test"
+            "price": 29.99
         }
         create_response = await client.post("/products/", json=product_data, headers=headers)
         created_product = create_response.json()
@@ -148,5 +132,5 @@ async def test_product_not_found(client: AsyncClient):
         assert response.status_code == 404
         error_data = response.json()
         assert error_data["success"] is False
-        assert error_data["error"]["code"] == "ERR_404"  # Updated to match actual error code
-        assert "Not Found" in error_data["error"]["message"] 
+        assert error_data["error"]["code"] == "ERR_NOT_FOUND"
+        assert error_data["error"]["message"] == "Product not found" 
