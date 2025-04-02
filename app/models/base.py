@@ -1,4 +1,4 @@
 from sqlalchemy.ext.declarative import declarative_base
 
-# 創建一個共用的 Base 實例
+# Create a shared Base instance
 Base = declarative_base()

@@ -10,10 +10,10 @@ from app.services.order_service import OrderService
 from app.errors import NotFoundError
 
 
-# 假設我們有一個簡單的用戶驗證機制
+# Assume we have a simple user authentication mechanism
 def get_current_user_id():
-    # 在實際應用中，這應該從JWT令牌或會話中獲取用戶ID
-    return 1  # 假設用戶ID為1
+    # In a real application, this should get the user ID from JWT token or session
+    return 1  # Assume user ID is 1
 
 
 router = APIRouter(prefix="/orders", tags=["orders"])

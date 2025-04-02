@@ -77,11 +77,11 @@ async def test_update_product(client: AsyncClient, product_data):
     created_product = create_response.json()
     product_id = created_product["id"]
     
-    # Update the product - 使用 PUT 而非 PATCH，以符合路由定義
+    # Update the product - use PUT instead of PATCH to match route definition
     update_data = {
         "name": "Updated Product Name",
         "price": 89.99,
-        "description": product_data["description"]  # 必須包含所有必要欄位
+        "description": product_data["description"]  # Must include all required fields
     }
     response = await client.put(f"/products/{product_id}", json=update_data, headers=headers)
     assert response.status_code == 200

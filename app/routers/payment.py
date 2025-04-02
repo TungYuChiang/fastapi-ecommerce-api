@@ -35,9 +35,9 @@ def process_payment(
             status_code=status.HTTP_400_BAD_REQUEST, detail=result["message"]
         )
 
-    # 如果支付成功，在後台異步驗證支付狀態
+    # If payment is successful, asynchronously verify payment status in the background
     if result["success"]:
-        # 使用Celery任務異步驗證支付狀態
+        # Use Celery task to asynchronously verify payment status
         verify_payment_status.delay(payment_data.order_id)
 
     return result

@@ -7,7 +7,7 @@ import json
 from jose import jwt
 from datetime import datetime, timedelta
 
-# 使用與 app 相同的密鑰（在測試環境中）
+# Use the same secret key as the app (in test environment)
 SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
 TOKEN_EXPIRE_MINUTES = 30
@@ -25,7 +25,7 @@ async def get_auth_token(client: AsyncClient) -> str:
     
     login_paths = ["/users/login", "/login"]
     
-    # 嘗試登入，若失敗則註冊
+    # Try to login, register if it fails
     for path in login_paths:
         try:
             login_data = {
@@ -39,18 +39,18 @@ async def get_auth_token(client: AsyncClient) -> str:
         except Exception as e:
             print(f"Error trying login path {path}: {str(e)}")
     
-    # 如果登入失敗，嘗試註冊
+    # If login fails, try to register
     register_paths = ["/users/register", "/register"]
     for path in register_paths:
         try:
             register_response = await client.post(path, json=test_user)
-            if register_response.status_code < 500:  # 任何非服務器錯誤
+            if register_response.status_code < 500:  # Any non-server error
                 print(f"Register path found: {path}")
                 break
         except Exception as e:
             print(f"Error trying path {path}: {str(e)}")
     
-    # 再次嘗試登入
+    # Try to login again
     for path in login_paths:
         try:
             login_data = {
@@ -64,7 +64,7 @@ async def get_auth_token(client: AsyncClient) -> str:
         except Exception as e:
             print(f"Error trying login path {path}: {str(e)}")
     
-    # 如果以上方法都失敗，則創建一個模擬的 JWT 令牌
+    # If all methods above fail, create a mock JWT token
     return create_test_token({"sub": "test_user"})
 
 def create_test_token(data: dict) -> str:

@@ -5,39 +5,39 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# 定義交換機和隊列名稱
+# Define exchange and queue names
 ORDER_EXCHANGE = "order_events"
 ORDER_CREATED_QUEUE = "order_created"
 PAYMENT_PROCESSED_QUEUE = "payment_processed"
 ORDER_SHIPPED_QUEUE = "order_shipped"
 
-# 定義路由鍵
+# Define routing keys
 ORDER_CREATED_KEY = "order.created"
 PAYMENT_PROCESSED_KEY = "order.payment"
 ORDER_SHIPPED_KEY = "order.shipped"
 
 
 class OrderEventProducer:
-    """訂單事件生產者，用於發布訂單相關事件"""
+    """Order event producer for publishing order-related events"""
 
     def __init__(self):
         self.rabbitmq = RabbitMQClient()
         self._setup_exchanges()
 
     def _setup_exchanges(self):
-        """設置交換機和隊列"""
+        """Set up exchanges and queues"""
         try:
             self.rabbitmq.connect()
 
-            # 聲明交換機
+            # Declare exchange
             self.rabbitmq.declare_exchange(ORDER_EXCHANGE, "direct")
 
-            # 聲明隊列
+            # Declare queues
             self.rabbitmq.declare_queue(ORDER_CREATED_QUEUE)
             self.rabbitmq.declare_queue(PAYMENT_PROCESSED_QUEUE)
             self.rabbitmq.declare_queue(ORDER_SHIPPED_QUEUE)
 
-            # 綁定隊列到交換機
+            # Bind queues to exchange
             self.rabbitmq.bind_queue(
                 ORDER_CREATED_QUEUE, ORDER_EXCHANGE, ORDER_CREATED_KEY
             )
@@ -49,10 +49,10 @@ class OrderEventProducer:
             )
 
         except Exception as e:
-            logger.error(f"設置 RabbitMQ 交換機和隊列時發生錯誤: {str(e)}")
+            logger.error(f"Error setting up RabbitMQ exchanges and queues: {str(e)}")
 
     def publish_order_created(self, order_id: int, user_id: int, total_amount: float):
-        """發布訂單創建事件"""
+        """Publish order creation event"""
         message = {
             "event_type": "order_created",
             "order_id": order_id,
@@ -65,14 +65,14 @@ class OrderEventProducer:
             self.rabbitmq.publish_message(
                 exchange=ORDER_EXCHANGE, routing_key=ORDER_CREATED_KEY, message=message
             )
-            logger.info(f"已發布訂單創建事件: {order_id}")
+            logger.info(f"Order creation event published: {order_id}")
         except Exception as e:
-            logger.error(f"發布訂單創建事件時發生錯誤: {str(e)}")
+            logger.error(f"Error publishing order creation event: {str(e)}")
 
     def publish_payment_processed(
         self, order_id: int, payment_status: str, payment_method: str
     ):
-        """發布支付處理事件"""
+        """Publish payment processing event"""
         message = {
             "event_type": "payment_processed",
             "order_id": order_id,
@@ -87,35 +87,35 @@ class OrderEventProducer:
                 routing_key=PAYMENT_PROCESSED_KEY,
                 message=message,
             )
-            logger.info(f"已發布支付處理事件: {order_id}, 狀態: {payment_status}")
+            logger.info(f"Payment processing event published: {order_id}, status: {payment_status}")
         except Exception as e:
-            logger.error(f"發布支付處理事件時發生錯誤: {str(e)}")
+            logger.error(f"Error publishing payment processing event: {str(e)}")
 
     def close(self):
-        """關閉連接"""
+        """Close connection"""
         self.rabbitmq.close()
 
 
 class OrderEventConsumer:
-    """訂單事件消費者，用於處理訂單相關事件"""
+    """Order event consumer for handling order-related events"""
 
     def __init__(self):
         self.rabbitmq = RabbitMQClient()
 
     def declare_queues(self):
-        """聲明所需的隊列和交換機"""
+        """Declare required queues and exchanges"""
         try:
             self.rabbitmq.connect()
 
-            # 聲明交換機
+            # Declare exchange
             self.rabbitmq.declare_exchange(ORDER_EXCHANGE, "topic")
 
-            # 聲明隊列
+            # Declare queues
             self.rabbitmq.declare_queue(ORDER_CREATED_QUEUE)
             self.rabbitmq.declare_queue(PAYMENT_PROCESSED_QUEUE)
             self.rabbitmq.declare_queue(ORDER_SHIPPED_QUEUE)
 
-            # 綁定隊列到交換機
+            # Bind queues to exchange
             self.rabbitmq.bind_queue(
                 ORDER_CREATED_QUEUE, ORDER_EXCHANGE, ORDER_CREATED_KEY
             )
@@ -126,40 +126,40 @@ class OrderEventConsumer:
                 ORDER_SHIPPED_QUEUE, ORDER_EXCHANGE, ORDER_SHIPPED_KEY
             )
 
-            logger.info("成功聲明所有隊列和交換機")
+            logger.info("Successfully declared all queues and exchanges")
         except Exception as e:
-            logger.error(f"聲明隊列和交換機時發生錯誤: {str(e)}")
+            logger.error(f"Error declaring queues and exchanges: {str(e)}")
             raise
 
     def start_order_created_consumer(self):
-        """開始消費訂單創建事件"""
+        """Start consuming order creation events"""
         try:
-            # 確保隊列已經被創建
+            # Ensure queues are created
             self.declare_queues()
 
             def handle_order_created(message):
                 order_id = message.get("order_id")
-                logger.info(f"處理訂單創建事件: {order_id}")
+                logger.info(f"Processing order creation event: {order_id}")
 
-                # 觸發異步任務發送訂單確認郵件
+                # Trigger async task to send order confirmation email
                 send_order_confirmation_email.delay(order_id)
 
             self.rabbitmq.consume_messages(ORDER_CREATED_QUEUE, handle_order_created)
         except Exception as e:
-            logger.error(f"消費訂單創建事件時發生錯誤: {str(e)}")
+            logger.error(f"Error consuming order creation event: {str(e)}")
 
     def start_payment_processed_consumer(self):
-        """開始消費支付處理事件"""
+        """Start consuming payment processing events"""
         try:
-            # 確保隊列已經被創建
+            # Ensure queues are created
             self.declare_queues()
 
             def handle_payment_processed(message):
                 order_id = message.get("order_id")
                 payment_status = message.get("payment_status")
-                logger.info(f"處理支付處理事件: {order_id}, 狀態: {payment_status}")
+                logger.info(f"Processing payment event: {order_id}, status: {payment_status}")
 
-                # 觸發異步任務驗證支付狀態
+                # Trigger async task to verify payment status
                 if payment_status == "completed":
                     verify_payment_status.delay(order_id)
 
@@ -167,8 +167,8 @@ class OrderEventConsumer:
                 PAYMENT_PROCESSED_QUEUE, handle_payment_processed
             )
         except Exception as e:
-            logger.error(f"消費支付處理事件時發生錯誤: {str(e)}")
+            logger.error(f"Error consuming payment processing event: {str(e)}")
 
     def close(self):
-        """關閉連接"""
+        """Close connection"""
         self.rabbitmq.close()

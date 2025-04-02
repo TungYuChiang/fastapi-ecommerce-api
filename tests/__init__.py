@@ -1,3 +1,3 @@
 """
-測試模組初始化
+Test module initialization
 """

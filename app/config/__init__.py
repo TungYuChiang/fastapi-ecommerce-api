@@ -1,3 +1,3 @@
 """
-配置模組初始化
-""" 
+Configuration module initialization
+"""

@@ -1,5 +1,5 @@
 """
-電子商務平台應用程式包
+E-Commerce Platform Application Package
 """
 
 __version__ = "1.0.0"

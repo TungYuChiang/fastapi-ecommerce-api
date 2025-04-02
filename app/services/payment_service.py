@@ -12,31 +12,31 @@ class PaymentService:
     @staticmethod
     def process_payment(db: Session, order_id: int, payment_method: str) -> dict:
         """
-        模擬支付處理過程
+        Simulate payment processing
         """
-        # 獲取訂單
+        # Get order
         order = db.query(Order).filter(Order.id == order_id).first()
         if not order:
-            return {"success": False, "message": "訂單不存在"}
+            return {"success": False, "message": "Order does not exist"}
 
         if order.status != OrderStatus.PENDING:
             return {
                 "success": False,
-                "message": f"訂單狀態為 {order.status}，無法處理支付",
+                "message": f"Order status is {order.status}, cannot process payment",
             }
 
-        # 模擬支付處理
-        # 在實際應用中，這裡會調用第三方支付API
-        success = random.random() > 0.2  # 80% 成功率
+        # Simulate payment processing
+        # In a real application, this would call a third-party payment API
+        success = random.random() > 0.2  # 80% success rate
 
-        # 更新訂單狀態
+        # Update order status
         if success:
             order.status = OrderStatus.PAID
             order.payment_status = "completed"
             db.commit()
             db.refresh(order)
 
-            # 發布支付處理事件到 RabbitMQ
+            # Publish payment processing event to RabbitMQ
             try:
                 producer = OrderEventProducer()
                 producer.publish_payment_processed(
@@ -46,11 +46,11 @@ class PaymentService:
                 )
                 producer.close()
             except Exception as e:
-                logger.error(f"發布支付處理事件時發生錯誤: {str(e)}")
+                logger.error(f"Error publishing payment processing event: {str(e)}")
 
             return {
                 "success": True,
-                "message": "支付成功",
+                "message": "Payment successful",
                 "transaction_id": f"TX-{random.randint(10000000, 99999999)}",
                 "amount": order.total_amount,
                 "payment_method": payment_method,
@@ -61,7 +61,7 @@ class PaymentService:
             db.commit()
             db.refresh(order)
 
-            # 發布支付處理事件到 RabbitMQ
+            # Publish payment processing event to RabbitMQ
             try:
                 producer = OrderEventProducer()
                 producer.publish_payment_processed(
@@ -71,26 +71,26 @@ class PaymentService:
                 )
                 producer.close()
             except Exception as e:
-                logger.error(f"發布支付處理事件時發生錯誤: {str(e)}")
+                logger.error(f"Error publishing payment processing event: {str(e)}")
 
             return {
                 "success": False,
-                "message": "支付失敗，請稍後重試",
+                "message": "Payment failed, please try again later",
                 "error_code": f"ERR-{random.randint(1000, 9999)}",
             }
 
     @staticmethod
     def verify_payment_status(db: Session, order_id: int) -> dict:
         """
-        模擬驗證支付狀態
+        Simulate payment status verification
         """
         order = db.query(Order).filter(Order.id == order_id).first()
         if not order:
-            return {"verified": False, "message": "訂單不存在"}
+            return {"verified": False, "message": "Order does not exist"}
 
         if order.payment_status == "completed":
-            return {"verified": True, "status": "completed", "message": "支付已完成"}
+            return {"verified": True, "status": "completed", "message": "Payment completed"}
         elif order.payment_status == "pending":
-            return {"verified": True, "status": "pending", "message": "支付處理中"}
+            return {"verified": True, "status": "pending", "message": "Payment processing"}
         else:
-            return {"verified": True, "status": "failed", "message": "支付失敗"}
+            return {"verified": True, "status": "failed", "message": "Payment failed"}

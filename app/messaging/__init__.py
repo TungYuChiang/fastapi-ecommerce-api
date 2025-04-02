@@ -1,1 +1,3 @@
-# 消息處理模塊初始化文件
+"""
+Message handling module initialization file
+"""

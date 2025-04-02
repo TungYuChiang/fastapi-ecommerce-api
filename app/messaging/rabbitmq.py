@@ -9,13 +9,13 @@ logger = logging.getLogger(__name__)
 
 
 class RabbitMQClient:
-    """RabbitMQ 客戶端類，用於處理消息的發送和接收"""
+    """RabbitMQ client class for handling message sending and receiving"""
 
     def __init__(self, rabbitmq_url=None):
-        # 從環境變數獲取 RabbitMQ URL，如果不存在則使用默認值
+        # Get RabbitMQ URL from environment variable, use default if not present
         self.rabbitmq_url = rabbitmq_url or os.environ.get("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
         
-        # 解析 URL
+        # Parse URL
         url = urlparse(self.rabbitmq_url)
         self.host = url.hostname or "localhost"
         self.port = url.port or 5672
@@ -25,7 +25,7 @@ class RabbitMQClient:
         self.channel = None
 
     def connect(self):
-        """建立與 RabbitMQ 服務器的連接"""
+        """Establish connection to RabbitMQ server"""
         if self.connection is None or self.connection.is_closed:
             credentials = pika.PlainCredentials(self.username, self.password)
             parameters = pika.ConnectionParameters(
@@ -33,44 +33,44 @@ class RabbitMQClient:
             )
             self.connection = pika.BlockingConnection(parameters)
             self.channel = self.connection.channel()
-            logger.info(f"已連接到 RabbitMQ 服務器: {self.host}:{self.port}")
+            logger.info(f"Connected to RabbitMQ server: {self.host}:{self.port}")
         return self.channel
 
     def close(self):
-        """關閉 RabbitMQ 連接"""
+        """Close RabbitMQ connection"""
         if self.connection and self.connection.is_open:
             self.connection.close()
-            logger.info("RabbitMQ 連接已關閉")
+            logger.info("RabbitMQ connection closed")
 
     def declare_exchange(self, exchange_name: str, exchange_type: str = "direct"):
-        """聲明一個交換機"""
+        """Declare an exchange"""
         channel = self.connect()
         channel.exchange_declare(
             exchange=exchange_name, exchange_type=exchange_type, durable=True
         )
-        logger.info(f"已聲明交換機: {exchange_name}, 類型: {exchange_type}")
+        logger.info(f"Exchange declared: {exchange_name}, type: {exchange_type}")
 
     def declare_queue(self, queue_name: str):
-        """聲明一個隊列"""
+        """Declare a queue"""
         channel = self.connect()
         channel.queue_declare(queue=queue_name, durable=True)
-        logger.info(f"已聲明隊列: {queue_name}")
+        logger.info(f"Queue declared: {queue_name}")
 
     def bind_queue(self, queue_name: str, exchange_name: str, routing_key: str):
-        """將隊列綁定到交換機"""
+        """Bind a queue to an exchange"""
         channel = self.connect()
         channel.queue_bind(
             queue=queue_name, exchange=exchange_name, routing_key=routing_key
         )
         logger.info(
-            f"已將隊列 {queue_name} 綁定到交換機 {exchange_name}, 路由鍵: {routing_key}"
+            f"Queue {queue_name} bound to exchange {exchange_name}, routing key: {routing_key}"
         )
 
     def publish_message(self, exchange: str, routing_key: str, message: Dict[str, Any]):
-        """發布消息到交換機"""
+        """Publish a message to an exchange"""
         channel = self.connect()
 
-        # 將消息轉換為 JSON 字符串
+        # Convert message to JSON string
         message_body = json.dumps(message)
 
         channel.basic_publish(
@@ -78,34 +78,34 @@ class RabbitMQClient:
             routing_key=routing_key,
             body=message_body,
             properties=pika.BasicProperties(
-                delivery_mode=2,  # 使消息持久化
+                delivery_mode=2,  # Make message persistent
                 content_type="application/json",
             ),
         )
-        logger.info(f"消息已發布到 {exchange}/{routing_key}: {message}")
+        logger.info(f"Message published to {exchange}/{routing_key}: {message}")
 
     def consume_messages(self, queue_name: str, callback: Callable):
-        """從隊列消費消息"""
+        """Consume messages from a queue"""
         channel = self.connect()
 
         def wrapped_callback(ch, method, properties, body):
             try:
-                # 將 JSON 字符串轉換回 Python 對象
+                # Convert JSON string back to Python object
                 message = json.loads(body)
-                logger.info(f"收到消息: {message}")
+                logger.info(f"Message received: {message}")
                 callback(message)
                 ch.basic_ack(delivery_tag=method.delivery_tag)
             except Exception as e:
-                logger.error(f"處理消息時發生錯誤: {str(e)}")
+                logger.error(f"Error processing message: {str(e)}")
                 ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
 
         channel.basic_qos(prefetch_count=1)
         channel.basic_consume(queue=queue_name, on_message_callback=wrapped_callback)
-        logger.info(f"開始從隊列 {queue_name} 消費消息...")
+        logger.info(f"Started consuming messages from queue {queue_name}...")
 
         try:
             channel.start_consuming()
         except KeyboardInterrupt:
             channel.stop_consuming()
-            logger.info("消息消費已停止")
+            logger.info("Message consumption stopped")
             self.close()

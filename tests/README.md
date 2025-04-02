@@ -1,198 +1,198 @@
-# API 測試框架
+# API Testing Framework
 
-本目錄包含電子商務平台 API 的測試框架與測試案例。測試使用 `pytest` 框架，並整合了 FastAPI 的測試工具，提供全面的 API 測試覆蓋。
+This directory contains the testing framework and test cases for the E-Commerce Platform API. Tests use the `pytest` framework and integrate FastAPI testing tools to provide comprehensive API test coverage.
 
-## 測試架構
+## Test Architecture
 
-測試架構組織如下：
+The test architecture is organized as follows:
 
 ```
 tests/
-├── __init__.py           # 測試包定義
-├── conftest.py           # 測試固件 (Fixtures)
-├── api/                  # API 測試目錄
+├── __init__.py           # Test package definition
+├── conftest.py           # Test fixtures
+├── api/                  # API test directory
 │   ├── __init__.py
-│   ├── test_product_api.py  # 產品 API 測試
-│   ├── test_user_api.py     # 用戶 API 測試
-│   ├── test_order_api.py    # 訂單 API 測試
-│   └── test_main.py         # 主應用程式測試
-└── README.md             # 本文檔
+│   ├── test_product_api.py  # Product API tests
+│   ├── test_user_api.py     # User API tests
+│   ├── test_order_api.py    # Order API tests
+│   └── test_main.py         # Main application tests
+└── README.md             # This document
 ```
 
-## 測試標記 (Markers)
+## Test Markers
 
-我們使用以下 pytest 標記來組織測試：
+We use the following pytest markers to organize tests:
 
-- `api`: API 端點測試
-- `unit`: 單元測試
-- `integration`: 整合測試
-- `slow`: 執行時間較長的測試
-- `e2e`: 端到端測試
+- `api`: API endpoint tests
+- `unit`: Unit tests
+- `integration`: Integration tests
+- `slow`: Tests that take longer to execute
+- `e2e`: End-to-end tests
 
-## 測試固件 (Fixtures)
+## Test Fixtures
 
-在 `conftest.py` 中定義了以下常用測試固件：
+The following common test fixtures are defined in `conftest.py`:
 
-- `client`: 非同步 HTTP 客戶端，用於測試 API 端點
-- `db_session`: 測試資料庫會話
-- `product_data`: 測試產品數據
-- `user_data`: 測試用戶數據
-- `order_data`: 測試訂單數據
-- `payment_data`: 測試支付數據
+- `client`: Asynchronous HTTP client for testing API endpoints
+- `db_session`: Test database session
+- `product_data`: Test product data
+- `user_data`: Test user data
+- `order_data`: Test order data
+- `payment_data`: Test payment data
 
-## 運行測試
+## Running Tests
 
-### 在 Docker 中運行測試
+### Running Tests in Docker
 
-使用以下命令在現有的 Docker 環境中運行測試：
+Use the following command to run tests in an existing Docker environment:
 
 ```bash
 ./scripts/run_tests.sh
 ```
 
-這將在 `ecommerce-api` 容器中運行所有測試，並顯示詳細測試結果和覆蓋率報告。
+This will run all tests in the `ecommerce-api` container and display detailed test results and coverage reports.
 
-## 錯誤處理機制
+## Error Handling Mechanism
 
-測試案例利用我們的統一錯誤處理機制，確保 API 返回標準化的錯誤響應。所有 API 錯誤都繼承自 `BaseAPIError` 類，並返回統一格式：
+Test cases utilize our unified error handling mechanism to ensure the API returns standardized error responses. All API errors inherit from the `BaseAPIError` class and return a unified format:
 
 ```json
 {
   "success": false,
   "error": {
     "code": "ERR_XXX",
-    "message": "錯誤訊息",
-    "detail": "可選的詳細信息"
+    "message": "Error message",
+    "detail": "Optional detailed information"
   }
 }
 ```
 
-測試案例驗證 API 在各種錯誤情況下是否返回正確的狀態碼和錯誤格式。
+Test cases verify that the API returns the correct status codes and error formats in various error scenarios.
 
-## 常見錯誤類型測試
+## Common Error Type Tests
 
-測試套件包含對以下常見錯誤類型的驗證：
+The test suite includes validation for the following common error types:
 
-- `NotFoundError` (404): 資源不存在
-- `ValidationError` (422): 輸入驗證錯誤
-- `AuthenticationError` (401): 未認證
-- `AuthorizationError` (403): 未授權
-- `ConflictError` (409): 資源衝突
-- `ServerError` (500): 伺服器內部錯誤
+- `NotFoundError` (404): Resource not found
+- `ValidationError` (422): Input validation error
+- `AuthenticationError` (401): Not authenticated
+- `AuthorizationError` (403): Not authorized
+- `ConflictError` (409): Resource conflict
+- `ServerError` (500): Server internal error
 
-## 新增測試
+## Adding Tests
 
-添加新測試時，請遵循以下步驟：
+When adding new tests, follow these steps:
 
-1. 在適當的測試目錄中創建測試文件 (如 `tests/api/test_new_feature.py`)
-2. 為每個測試案例使用 `@pytest.mark.api` 或其他適當的標記
-3. 使用 `@pytest.mark.asyncio` 裝飾所有非同步測試函數
-4. 使用固件 (fixtures) 提供測試數據和客戶端
-5. 斷言 API 回應是否符合預期
+1. Create a test file in the appropriate test directory (e.g., `tests/api/test_new_feature.py`)
+2. Use `@pytest.mark.api` or other appropriate markers for each test case
+3. Decorate all asynchronous test functions with `@pytest.mark.asyncio`
+4. Use fixtures to provide test data and clients
+5. Assert that the API response meets expectations
 
-## 最佳實踐
+## Best Practices
 
-- 每個測試案例應該獨立，不依賴其他測試的狀態
-- 使用模擬 (mocks) 進行外部依賴的隔離
-- 測試案例應覆蓋正常情況和錯誤情況
-- 維持高測試覆蓋率，尤其是核心業務邏輯
-- 定期運行測試套件，確保系統穩定性 
+- Each test case should be independent, not relying on the state of other tests
+- Use mocks for isolation of external dependencies
+- Test cases should cover normal scenarios and error scenarios
+- Maintain high test coverage, especially for core business logic
+- Run the test suite regularly to ensure system stability
 
-## 使用 Docker 指令運行測試
+## Using Docker Commands to Run Tests
 
-除了使用 `run_tests.sh` 腳本外，你也可以直接使用 Docker 指令來運行測試。以下是使用 Docker 運行測試的詳細說明：
+In addition to using the `run_tests.sh` script, you can also use Docker commands directly to run tests. Below are detailed instructions for running tests using Docker:
 
-### 使用 docker-compose 啟動服務
+### Start Services Using docker-compose
 
-首先，確保你的開發環境已經啟動：
+First, make sure your development environment is running:
 
 ```bash
-# 啟動所有服務
+# Start all services
 docker-compose up -d
 ```
 
-### 使用 docker exec 運行測試
+### Run Tests Using docker exec
 
-#### 運行所有測試
+#### Run All Tests
 
 ```bash
-# 運行所有測試
+# Run all tests
 docker exec ecommerce-api pytest
 
-# 運行所有測試並顯示詳細輸出
+# Run all tests with verbose output
 docker exec ecommerce-api pytest -v
 
-# 運行所有測試並生成覆蓋率報告
+# Run all tests and generate a coverage report
 docker exec ecommerce-api pytest --cov=app
 ```
 
-#### 運行特定目錄或文件的測試
+#### Run Tests for Specific Directories or Files
 
 ```bash
-# 運行所有 API 測試
+# Run all API tests
 docker exec ecommerce-api pytest tests/api/ -v
 
-# 運行特定測試文件
+# Run a specific test file
 docker exec ecommerce-api pytest tests/api/test_product_api.py -v
 
-# 運行多個測試文件
+# Run multiple test files
 docker exec ecommerce-api pytest tests/api/test_main.py tests/api/test_product_api.py -v
 ```
 
-#### 運行特定標記的測試
+#### Run Tests with Specific Markers
 
 ```bash
-# 運行所有標記為 'api' 的測試
+# Run all tests marked as 'api'
 docker exec ecommerce-api pytest -m api -v
 
-# 運行所有非慢速測試 (不包含標記為 'slow' 的測試)
+# Run all non-slow tests (excluding tests marked as 'slow')
 docker exec ecommerce-api pytest -m "not slow" -v
 ```
 
-### 文件同步與更新測試
+### File Synchronization and Test Updates
 
-如果你在本地更新了測試文件，可以使用 `docker cp` 命令將更新的文件複製到容器中：
+If you update test files locally, you can use the `docker cp` command to copy the updated files to the container:
 
 ```bash
-# 複製單個測試文件到容器
+# Copy a single test file to the container
 docker cp tests/api/test_product_api.py ecommerce-api:/app/tests/api/
 
-# 複製測試工具函數
+# Copy test utility functions
 docker cp tests/utils.py ecommerce-api:/app/tests/
 
-# 複製整個測試目錄
+# Copy the entire test directory
 docker cp tests/ ecommerce-api:/app/
 ```
 
-注意：如果你在 `docker-compose.yml` 中正確設置了卷掛載，通常不需要手動複製文件，因為本地文件的更改會自動同步到容器。但如果遇到同步問題，可以使用上述命令進行手動同步。
+Note: If you have correctly set up volume mounts in your `docker-compose.yml`, you usually don't need to manually copy files, as local file changes will automatically sync to the container. However, if you encounter synchronization issues, you can use the above commands for manual synchronization.
 
-### 處理測試數據庫
+### Handling Test Databases
 
-如果測試需要一個乾淨的數據庫環境：
+If tests require a clean database environment:
 
 ```bash
-# 重新創建數據庫表 (慎用，會清除現有數據)
+# Recreate database tables (use with caution, will clear existing data)
 docker exec ecommerce-api python scripts/create_tables.py
 ```
 
-### 查看測試日誌
+### View Test Logs
 
 ```bash
-# 查看容器日誌以檢查測試輸出
+# View container logs to check test output
 docker logs ecommerce-api
 
-# 實時查看日誌流
+# View logs in real-time
 docker logs -f ecommerce-api
 ```
 
-### 排除常見問題
+### Troubleshooting Common Issues
 
-1. **身份驗證問題**：如果測試中遇到身份驗證錯誤，可能需要確保 JWT 密鑰設置正確。
+1. **Authentication Issues**: If you encounter authentication errors in tests, you may need to ensure the JWT key is set correctly.
    
-2. **端口衝突**：如果遇到端口已被佔用的錯誤，可以修改 `.env` 文件中的端口設置。
+2. **Port Conflicts**: If you get errors about ports being in use, you can modify the port settings in the `.env` file.
 
-3. **路徑問題**：API 測試可能因路徑配置不同而失敗，確保使用正確的路徑格式（某些端點可能需要尾隨斜杠）。
+3. **Path Issues**: API tests may fail due to different path configurations, make sure to use the correct path format (some endpoints may require trailing slashes).
 
-4. **數據同步**：如果卷掛載未正常工作，使用 `docker cp` 命令手動同步文件。
+4. **Data Synchronization**: If volume mounts aren't working properly, use the `docker cp` command to manually synchronize files.
 
-實施這些測試策略，可確保你的 API 在 Docker 容器中能夠被可靠且一致地測試。 
+Implementing these testing strategies ensures your API can be reliably and consistently tested in Docker containers. 

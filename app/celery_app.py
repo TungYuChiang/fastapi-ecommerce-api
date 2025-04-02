@@ -1,7 +1,7 @@
 from celery import Celery
 from app.config.settings import REDIS_URL
 
-# 創建Celery實例
+# Create Celery instance
 celery_app = Celery(
     "ecommerce",
     broker=REDIS_URL,
@@ -9,11 +9,11 @@ celery_app = Celery(
     include=["app.tasks.order_tasks"],
 )
 
-# 可選配置
+# Optional configuration
 celery_app.conf.update(
     task_serializer="json",
-    accept_content=["json"],  # 只接受JSON序列化的任務
+    accept_content=["json"],  # Only accept JSON serialized tasks
     result_serializer="json",
-    timezone="Asia/Taipei",  # 設定時區
+    timezone="Asia/Taipei",  # Set timezone
     enable_utc=True,
 )

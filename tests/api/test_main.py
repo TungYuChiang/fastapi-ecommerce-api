@@ -20,7 +20,7 @@ async def test_root_endpoint(client: AsyncClient):
         data = response.json()
         assert "message" in data
         assert "version" in data
-        assert "歡迎使用電子商務平台 API" in data["message"]
+        assert "Welcome to the E-Commerce Platform API" in data["message"]
 
 
 @pytest.mark.api

@@ -1,188 +1,188 @@
-# 電子商務平台 API
+# E-Commerce Platform API
 
-這是一個使用 FastAPI 開發的電子商務平台 API，包含商品管理、用戶管理、訂單處理和支付功能。
+This is an E-Commerce Platform API developed with FastAPI, providing product management, user management, order processing, and payment functionality.
 
-## 系統架構
+## System Architecture
 
-- **Web API**: FastAPI 提供 RESTful API
-- **數據庫**: PostgreSQL 存儲應用數據
-- **消息隊列**: RabbitMQ 處理訂單事件
-- **任務處理**: Celery + Redis 處理異步任務
-- **測試框架**: Pytest 提供 API 測試覆蓋
-- **錯誤處理**: 統一的錯誤處理機制
+- **Web API**: FastAPI providing RESTful API
+- **Database**: PostgreSQL for application data storage
+- **Message Queue**: RabbitMQ for order event processing
+- **Task Processing**: Celery + Redis for asynchronous tasks
+- **Testing Framework**: Pytest for API test coverage
+- **Error Handling**: Unified error handling mechanism
 
-## 技術堆棧
+## Technology Stack
 
-- **FastAPI**: 高性能 API 框架
-- **SQLAlchemy**: ORM 數據庫操作
-- **Pydantic**: 數據驗證和序列化
-- **Celery**: 分散式任務隊列
-- **Redis**: 緩存和 Celery 後端
-- **RabbitMQ**: 消息隊列
-- **Pytest**: 測試框架
-- **Docker & Docker Compose**: 容器化部署
+- **FastAPI**: High-performance API framework
+- **SQLAlchemy**: ORM for database operations
+- **Pydantic**: Data validation and serialization
+- **Celery**: Distributed task queue
+- **Redis**: Caching and Celery backend
+- **RabbitMQ**: Message queue
+- **Pytest**: Testing framework
+- **Docker & Docker Compose**: Containerized deployment
 
-## 使用 Docker 運行 (建議)
+## Running with Docker (Recommended)
 
-### 前置需求
+### Prerequisites
 
 - Docker
 - Docker Compose
 
-### 啟動所有服務
+### Start All Services
 
 ```bash
 docker-compose up -d
 ```
 
-這將啟動以下服務:
-- PostgreSQL 數據庫
-- Redis 服務器
-- RabbitMQ 消息隊列
-- FastAPI 應用程式
+This will start the following services:
+- PostgreSQL database
+- Redis server
+- RabbitMQ message queue
+- FastAPI application
 - Celery Worker
-- RabbitMQ 消費者
+- RabbitMQ consumer
 
-### 查看日誌
+### View Logs
 
 ```bash
-# 查看所有服務的日誌
+# View logs for all services
 docker-compose logs -f
 
-# 查看特定服務的日誌
+# View logs for specific services
 docker-compose logs -f api
 docker-compose logs -f celery_worker
 docker-compose logs -f rabbitmq_consumer
 ```
 
-### 停止服務
+### Stop Services
 
 ```bash
 docker-compose down
 ```
 
-### 重建服務
+### Rebuild Services
 
-如果您修改了代碼或配置，需要重建服務:
+If you've modified code or configuration and need to rebuild services:
 
 ```bash
 docker-compose build
 docker-compose up -d
 ```
-## 測試
+## Testing
 
-### 使用 Docker 環境運行測試
+### Run Tests in Docker Environment
 
-確保 Docker 容器已運行，然後執行：
+Ensure Docker containers are running, then execute:
 
 ```bash
 ./scripts/run_tests.sh
 ```
 
-### 本地運行測試
+### Run Tests Locally
 
 ```bash
-# 運行所有測試
+# Run all tests
 pytest
 
-# 運行特定測試文件
+# Run specific test file
 pytest tests/api/test_product_api.py
 
-# 運行特定類型的測試
+# Run specific type of tests
 pytest -m api
 
-# 生成測試覆蓋率報告
+# Generate test coverage report
 pytest --cov=app
 ```
 
-詳細的測試說明請參考 [測試文檔](tests/README.md)。
+For detailed testing instructions, refer to the [Testing Documentation](tests/README.md).
 
-## 錯誤處理機制
+## Error Handling Mechanism
 
-本專案實現了統一的錯誤處理機制，透過自定義異常類處理各種 API 錯誤情況。所有錯誤響應均採用標準格式：
+This project implements a unified error handling mechanism, processing various API error scenarios through custom exception classes. All error responses follow a standard format:
 
 ```json
 {
   "success": false,
   "error": {
     "code": "ERR_XXX",
-    "message": "錯誤訊息",
-    "detail": "詳細信息"
+    "message": "Error message",
+    "detail": "Detailed information"
   }
 }
 ```
 
-主要錯誤類型：
+Main error types:
 
-- `NotFoundError` (404): 請求的資源不存在
-- `ValidationError` (422): 請求數據驗證失敗
-- `AuthenticationError` (401): 未認證或認證失敗
-- `AuthorizationError` (403): 認證成功但無訪問權限
-- `ConflictError` (409): 資源衝突
-- `ServerError` (500): 伺服器內部錯誤
+- `NotFoundError` (404): Requested resource not found
+- `ValidationError` (422): Request data validation failed
+- `AuthenticationError` (401): Not authenticated or authentication failed
+- `AuthorizationError` (403): Authentication successful but no access permission
+- `ConflictError` (409): Resource conflict
+- `ServerError` (500): Server internal error
 
-## API 端點
+## API Endpoints
 
-### 商品管理
+### Product Management
 
-- `GET /products`: 獲取所有商品
-- `GET /products/{product_id}`: 獲取特定商品
-- `POST /products`: 創建新商品
-- `PUT /products/{product_id}`: 更新商品
-- `DELETE /products/{product_id}`: 刪除商品
+- `GET /products`: Get all products
+- `GET /products/{product_id}`: Get specific product
+- `POST /products`: Create new product
+- `PUT /products/{product_id}`: Update product
+- `DELETE /products/{product_id}`: Delete product
 
-### 用戶管理
+### User Management
 
-- `POST /users`: 創建用戶
-- `GET /users/{user_id}`: 獲取用戶資料
+- `POST /users`: Create user
+- `GET /users/{user_id}`: Get user profile
 
-### 訂單管理
+### Order Management
 
-- `POST /orders`: 創建訂單
-- `GET /orders/{order_id}`: 獲取特定訂單
-- `GET /orders`: 獲取所有訂單
+- `POST /orders`: Create order
+- `GET /orders/{order_id}`: Get specific order
+- `GET /orders`: Get all orders
 
-### 支付處理
+### Payment Processing
 
-- `POST /payments/process`: 處理支付
-- `GET /payments/status/{order_id}`: 檢查支付狀態
+- `POST /payments/process`: Process payment
+- `GET /payments/status/{order_id}`: Check payment status
 
-## 訂單處理流程
+## Order Processing Flow
 
-1. 客戶創建訂單 (`POST /orders`)
-2. 系統發布訂單創建事件到 RabbitMQ
-3. 客戶提交支付 (`POST /payments/process`)
-4. 系統處理支付並發布支付處理事件到 RabbitMQ
-5. Celery Worker 驗證支付狀態
-6. 客戶可以查詢訂單狀態 (`GET /orders/{order_id}`)
+1. Customer creates order (`POST /orders`)
+2. System publishes order creation event to RabbitMQ
+3. Customer submits payment (`POST /payments/process`)
+4. System processes payment and publishes payment processing event to RabbitMQ
+5. Celery Worker verifies payment status
+6. Customer can query order status (`GET /orders/{order_id}`)
 
-## 項目結構
+## Project Structure
 
 ```
 ecommerce/
 ├── app/
-│   ├── config/          # 配置模組
-│   ├── models/          # 數據庫模型
-│   ├── routers/         # API 路由
-│   ├── schemas/         # Pydantic 模型
-│   ├── services/        # 業務邏輯
-│   ├── tasks/           # Celery 任務
-│   ├── messaging/       # 消息處理
-│   ├── __init__.py      # 應用程式包初始化
-│   ├── celery_app.py    # Celery 配置
-│   ├── errors.py        # 錯誤處理機制
-│   └── database.py      # 數據庫連接
-├── scripts/             # 腳本和工具
-│   ├── worker.py        # Celery Worker 啟動
-│   └── run_tests.sh     # 測試執行腳本
-├── tests/               # 測試目錄
-│   ├── api/             # API 測試
-│   ├── conftest.py      # 測試固件
-│   └── README.md        # 測試文檔
-├── api.py               # API 服務入口點
-├── run.py               # 統一命令行介面
-├── requirements.txt     # 依賴管理
-├── Dockerfile           # Docker 配置
-├── docker-compose.yml   # Docker Compose 配置
-└── .env                 # 環境變數
+│   ├── config/          # Configuration module
+│   ├── models/          # Database models
+│   ├── routers/         # API routes
+│   ├── schemas/         # Pydantic models
+│   ├── services/        # Business logic
+│   ├── tasks/           # Celery tasks
+│   ├── messaging/       # Message handling
+│   ├── __init__.py      # Application package initialization
+│   ├── celery_app.py    # Celery configuration
+│   ├── errors.py        # Error handling mechanism
+│   └── database.py      # Database connection
+├── scripts/             # Scripts and tools
+│   ├── worker.py        # Celery Worker startup
+│   └── run_tests.sh     # Test execution script
+├── tests/               # Test directory
+│   ├── api/             # API tests
+│   ├── conftest.py      # Test fixtures
+│   └── README.md        # Testing documentation
+├── api.py               # API service entry point
+├── run.py               # Unified command line interface
+├── requirements.txt     # Dependency management
+├── Dockerfile           # Docker configuration
+├── docker-compose.yml   # Docker Compose configuration
+└── .env                 # Environment variables
 ```

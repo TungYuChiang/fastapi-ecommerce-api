@@ -15,7 +15,7 @@ async def test_register_user(client: AsyncClient, user_data):
     """
     Test user registration
     """
-    # 確保每次測試使用唯一用戶名
+    # Ensure each test uses a unique username
     
     user_data = {
         "username": f"testuser_{uuid.uuid4().hex[:8]}",

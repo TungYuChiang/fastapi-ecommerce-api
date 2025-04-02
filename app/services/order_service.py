@@ -26,21 +26,21 @@ class OrderService:
         )
 
         db.add(db_order)
-        db.flush()  # 獲取訂單ID
+        db.flush()  # Get order ID
 
-        # 處理訂單項目
+        # Process order items
         total_amount = 0
 
         for item in order_data.items:
-            # 獲取產品
+            # Get product
             product = (
                 db.query(Product).filter(Product.id == item.product_id).first()
             )
             if not product:
                 db.rollback()
-                raise ValueError(f"產品 ID {item.product_id} 不存在")
+                raise ValueError(f"Product ID {item.product_id} does not exist")
 
-            # 創建訂單項目
+            # Create order item
             order_item = OrderItem(
                 order_id=db_order.id,
                 product_id=product.id,
@@ -50,7 +50,7 @@ class OrderService:
 
             db.add(order_item)
 
-            # 計算總額
+            # Calculate total amount
             total_amount += product.price * item.quantity
 
         db_order.total_amount = total_amount
@@ -58,7 +58,7 @@ class OrderService:
         db.commit()
         db.refresh(db_order)
 
-        # 發布訂單創建事件到 RabbitMQ
+        # Publish order creation event to RabbitMQ
         try:
             producer = OrderEventProducer()
             producer.publish_order_created(
@@ -66,7 +66,7 @@ class OrderService:
             )
             producer.close()
         except Exception as e:
-            logger.error(f"發布訂單創建事件時發生錯誤: {str(e)}")
+            logger.error(f"Error publishing order creation event: {str(e)}")
 
         return db_order
 

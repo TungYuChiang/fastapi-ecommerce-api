@@ -10,5 +10,5 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
 
-    # 與訂單的關聯，使用 lazy="dynamic" 來提高性能和避免循環引用問題
+    # Association with orders, using lazy="dynamic" to improve performance and avoid circular reference problems
     orders = relationship("Order", back_populates="user", lazy="dynamic")

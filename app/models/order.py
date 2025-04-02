@@ -32,7 +32,7 @@ class Order(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    # 使用字符串引用 User 模型，並使用 lazy='joined' 來避免 N+1 查詢問題
+    # Use string reference to User model and lazy='joined' to avoid N+1 query problems
     user = relationship(
         "User", foreign_keys=[user_id], back_populates="orders", lazy="joined"
     )
