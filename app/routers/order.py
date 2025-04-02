@@ -1,10 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-import random
 
 from app.database import get_db
-from app.models.order import OrderStatus
 from app.schemas.order import OrderCreate, OrderResponse, OrderListResponse
 from app.services.order_service import OrderService
 from app.errors import NotFoundError

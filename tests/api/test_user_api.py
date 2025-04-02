@@ -4,7 +4,6 @@ Tests for user API endpoints
 import pytest
 import uuid
 from httpx import AsyncClient
-from app.errors import NotFoundError, ValidationError
 
 pytest_plugins = ('pytest_asyncio',)
 

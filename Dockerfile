@@ -6,11 +6,19 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
+    nodejs \
+    npm \
     && rm -rf /var/lib/apt/lists/*
+
+# Install markdownlint for markdown linting
+RUN npm install -g markdownlint-cli
 
 # Copy dependency file and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Install ruff for Python linting
+RUN pip install --no-cache-dir ruff
 
 # Create test report directory
 RUN mkdir -p /app/test-reports

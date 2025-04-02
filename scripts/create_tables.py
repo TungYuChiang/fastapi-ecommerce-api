@@ -13,9 +13,6 @@ from app.database import engine
 from app.models.base import Base
 
 # Ensure all models are imported so Base.metadata can collect all table definitions
-from app.models.user import User
-from app.models.product import Product
-from app.models.order import Order, OrderItem
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

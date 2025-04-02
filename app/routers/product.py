@@ -1,7 +1,6 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends
 from typing import List
 from sqlalchemy.orm import Session
-from app.models.product import Product
 from app.schemas.product import ProductSchema
 from app.database import get_db
 from app.services.product import (

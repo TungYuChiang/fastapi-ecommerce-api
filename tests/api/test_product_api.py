@@ -3,7 +3,6 @@ Tests for product API endpoints
 """
 import pytest
 from httpx import AsyncClient
-from app.errors import NotFoundError
 from main import app
 from tests.utils import get_auth_headers
 

@@ -21,9 +21,6 @@ from app.models.base import Base
 from app.database import engine
 
 # Ensure all models are imported so Base.metadata can collect all table definitions
-from app.models.user import User
-from app.models.product import Product
-from app.models.order import Order, OrderItem
 
 # Create FastAPI application instance
 app = FastAPI(

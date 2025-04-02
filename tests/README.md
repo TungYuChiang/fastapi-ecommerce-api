@@ -6,7 +6,7 @@ This directory contains the testing framework and test cases for the E-Commerce 
 
 The test architecture is organized as follows:
 
-```
+```plaintex
 tests/
 ├── __init__.py           # Test package definition
 ├── conftest.py           # Test fixtures
@@ -16,7 +16,7 @@ tests/
 │   ├── test_user_api.py     # User API tests
 │   ├── test_order_api.py    # Order API tests
 │   └── test_main.py         # Main application tests
-└── README.md             # This document
+└── README.md             # This documen
 ```
 
 ## Test Markers
@@ -50,6 +50,27 @@ Use the following command to run tests in an existing Docker environment:
 ./scripts/run_tests.sh
 ```
 
+The test script includes:
+
+- Markdown linting to ensure documentation quality
+- Python code linting using Ruff to enforce code style
+- Unit tests execution with coverage reporting
+
+The script supports command-line options for more flexibility:
+
+```bash
+# Run tests with automatic linting fixes
+./scripts/run_tests.sh --fix
+
+# Display help information
+./scripts/run_tests.sh --help
+```
+
+Options:
+
+- `-f, --fix`: Automatically fix linting issues in both Markdown and Python code
+- `-h, --help`: Show help message with available options
+
 This will run all tests in the `ecommerce-api` container and display detailed test results and coverage reports.
 
 ## Error Handling Mechanism
@@ -77,7 +98,7 @@ The test suite includes validation for the following common error types:
 - `ValidationError` (422): Input validation error
 - `AuthenticationError` (401): Not authenticated
 - `AuthorizationError` (403): Not authorized
-- `ConflictError` (409): Resource conflict
+- `ConflictError` (409): Resource conflic
 - `ServerError` (500): Server internal error
 
 ## Adding Tests
@@ -117,12 +138,12 @@ docker-compose up -d
 
 ```bash
 # Run all tests
-docker exec ecommerce-api pytest
+docker exec ecommerce-api pytes
 
-# Run all tests with verbose output
+# Run all tests with verbose outpu
 docker exec ecommerce-api pytest -v
 
-# Run all tests and generate a coverage report
+# Run all tests and generate a coverage repor
 docker exec ecommerce-api pytest --cov=app
 ```
 
@@ -178,7 +199,7 @@ docker exec ecommerce-api python scripts/create_tables.py
 ### View Test Logs
 
 ```bash
-# View container logs to check test output
+# View container logs to check test outpu
 docker logs ecommerce-api
 
 # View logs in real-time
@@ -188,11 +209,11 @@ docker logs -f ecommerce-api
 ### Troubleshooting Common Issues
 
 1. **Authentication Issues**: If you encounter authentication errors in tests, you may need to ensure the JWT key is set correctly.
-   
+
 2. **Port Conflicts**: If you get errors about ports being in use, you can modify the port settings in the `.env` file.
 
 3. **Path Issues**: API tests may fail due to different path configurations, make sure to use the correct path format (some endpoints may require trailing slashes).
 
 4. **Data Synchronization**: If volume mounts aren't working properly, use the `docker cp` command to manually synchronize files.
 
-Implementing these testing strategies ensures your API can be reliably and consistently tested in Docker containers. 
+Implementing these testing strategies ensures your API can be reliably and consistently tested in Docker containers.

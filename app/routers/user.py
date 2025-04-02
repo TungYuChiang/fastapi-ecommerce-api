@@ -1,17 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from fastapi.security import OAuth2PasswordRequestForm
-from jose import JWTError, jwt
-from datetime import datetime, timedelta
 
 from ..database import get_db
-from ..models.user import User
 from ..schemas.user import UserCreate, UserLogin
 from ..services.user import (
     create_user,
     authenticate_user,
     create_access_token,
-    get_access_token_expire_minutes,
 )
 
 router = APIRouter()

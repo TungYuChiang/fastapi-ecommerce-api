@@ -5,15 +5,13 @@ import asyncio
 import os
 import pytest
 import uuid
-from typing import AsyncGenerator, Generator
+from typing import Generator
 from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy import create_engine
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from app.models.base import Base
 from main import app as main_app
-from app.database import get_db
 
 # Test database URL (using SQLite in memory for tests)
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///./test.db")
@@ -88,8 +86,8 @@ def user_data():
     Sample user data for tests.
     """
     return {
-        "username": "testuser",
-        "password": "TestPassword123",
+        "username": f"testuser_{uuid.uuid4().hex[:8]}",
+        "password": f"TestPassword_{uuid.uuid4().hex[:8]}",
     }
 
 

@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from typing import Optional
 
 from app.database import get_db
 from app.models.order import PaymentMethod

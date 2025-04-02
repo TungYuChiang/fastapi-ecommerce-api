@@ -24,7 +24,7 @@ This is an E-Commerce Platform API developed with FastAPI, providing product man
 - **Redis**: Caching and Celery backend
 - **RabbitMQ**: Message queue
 - **Pytest**: Testing framework
-- **Docker & Docker Compose**: Containerized deployment
+- **Docker & Docker Compose**: Containerized deploymen
 
 ## Running with Docker (Recommended)
 
@@ -40,6 +40,7 @@ docker-compose up -d
 ```
 
 This will start the following services:
+
 - PostgreSQL database
 - Redis server
 - RabbitMQ message queue
@@ -73,6 +74,7 @@ If you've modified code or configuration and need to rebuild services:
 docker-compose build
 docker-compose up -d
 ```
+
 ## Testing
 
 ### Run Tests in Docker Environment
@@ -83,11 +85,32 @@ Ensure Docker containers are running, then execute:
 ./scripts/run_tests.sh
 ```
 
+The test script supports the following options:
+
+```bash
+# Run tests with automatic linting fixes
+./scripts/run_tests.sh --fix
+
+# Show available options
+./scripts/run_tests.sh --help
+```
+
+Available options:
+
+- `-f, --fix`: Automatically fix linting issues when possible
+- `-h, --help`: Show the help message with available options
+
+The testing process includes:
+
+1. Markdown linting (with automatic fixes if `--fix` option is used)
+2. Python code linting using Ruff (with automatic fixes if `--fix` option is used)
+3. Running unit tests and generating coverage reports
+
 ### Run Tests Locally
 
 ```bash
 # Run all tests
-pytest
+pytes
 
 # Run specific test file
 pytest tests/api/test_product_api.py
@@ -95,7 +118,7 @@ pytest tests/api/test_product_api.py
 # Run specific type of tests
 pytest -m api
 
-# Generate test coverage report
+# Generate test coverage repor
 pytest --cov=app
 ```
 
@@ -122,25 +145,25 @@ Main error types:
 - `ValidationError` (422): Request data validation failed
 - `AuthenticationError` (401): Not authenticated or authentication failed
 - `AuthorizationError` (403): Authentication successful but no access permission
-- `ConflictError` (409): Resource conflict
+- `ConflictError` (409): Resource conflic
 - `ServerError` (500): Server internal error
 
 ## API Endpoints
 
-### Product Management
+### Product Managemen
 
 - `GET /products`: Get all products
-- `GET /products/{product_id}`: Get specific product
-- `POST /products`: Create new product
-- `PUT /products/{product_id}`: Update product
-- `DELETE /products/{product_id}`: Delete product
+- `GET /products/{product_id}`: Get specific produc
+- `POST /products`: Create new produc
+- `PUT /products/{product_id}`: Update produc
+- `DELETE /products/{product_id}`: Delete produc
 
-### User Management
+### User Managemen
 
 - `POST /users`: Create user
 - `GET /users/{user_id}`: Get user profile
 
-### Order Management
+### Order Managemen
 
 - `POST /orders`: Create order
 - `GET /orders/{order_id}`: Get specific order
@@ -148,7 +171,7 @@ Main error types:
 
 ### Payment Processing
 
-- `POST /payments/process`: Process payment
+- `POST /payments/process`: Process paymen
 - `GET /payments/status/{order_id}`: Check payment status
 
 ## Order Processing Flow
@@ -162,7 +185,7 @@ Main error types:
 
 ## Project Structure
 
-```
+```plaintex
 ecommerce/
 ├── app/
 │   ├── config/          # Configuration module
@@ -178,14 +201,14 @@ ecommerce/
 │   └── database.py      # Database connection
 ├── scripts/             # Scripts and tools
 │   ├── worker.py        # Celery Worker startup
-│   └── run_tests.sh     # Test execution script
+│   └── run_tests.sh     # Test execution scrip
 ├── tests/               # Test directory
 │   ├── api/             # API tests
 │   ├── conftest.py      # Test fixtures
 │   └── README.md        # Testing documentation
-├── api.py               # API service entry point
+├── api.py               # API service entry poin
 ├── run.py               # Unified command line interface
-├── requirements.txt     # Dependency management
+├── requirements.txt     # Dependency managemen
 ├── Dockerfile           # Docker configuration
 ├── docker-compose.yml   # Docker Compose configuration
 └── .env                 # Environment variables
@@ -202,7 +225,7 @@ This project uses GitHub Actions for continuous integration and code quality con
 ### CI/CD Process
 
 1. **Code Quality**: All pull requests are automatically checked for code style with Ruff
-2. **Testing**: Automated tests are run against a temporary test environment
+2. **Testing**: Automated tests are run against a temporary test environmen
 3. **Security**: Dependencies are scanned for known vulnerabilities
 4. **Docker Build**: Tests that the Docker image builds successfully
 

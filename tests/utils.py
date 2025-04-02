@@ -2,8 +2,7 @@
 Test utility functions
 """
 from httpx import AsyncClient
-from typing import Dict, Any
-import json
+from typing import Dict
 from jose import jwt
 from datetime import datetime, timedelta
 
