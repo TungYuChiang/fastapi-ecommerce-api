@@ -1,5 +1,9 @@
 # E-Commerce Platform API
 
+[![CI](https://github.com/TungYuChiang/ecommerce/actions/workflows/ci.yml/badge.svg)](https://github.com/TungYuChiang/ecommerce/actions/workflows/ci.yml)
+[![Security Scan](https://github.com/TungYuChiang/ecommerce/actions/workflows/security.yml/badge.svg)](https://github.com/TungYuChiang/ecommerce/actions/workflows/security.yml)
+[![Documentation Checks](https://github.com/TungYuChiang/ecommerce/actions/workflows/docs.yml/badge.svg)](https://github.com/TungYuChiang/ecommerce/actions/workflows/docs.yml)
+
 This is an E-Commerce Platform API developed with FastAPI, providing product management, user management, order processing, and payment functionality.
 
 ## System Architecture
@@ -186,3 +190,20 @@ ecommerce/
 ├── docker-compose.yml   # Docker Compose configuration
 └── .env                 # Environment variables
 ```
+
+## CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration and code quality control:
+
+- **CI Workflow**: Runs linting, tests, and builds the Docker image
+- **Security Scan**: Checks dependencies for vulnerabilities and scans code for security issues
+- **Documentation Checks**: Verifies the quality of documentation files
+
+### CI/CD Process
+
+1. **Code Quality**: All pull requests are automatically checked for code style with Ruff
+2. **Testing**: Automated tests are run against a temporary test environment
+3. **Security**: Dependencies are scanned for known vulnerabilities
+4. **Docker Build**: Tests that the Docker image builds successfully
+
+To view the CI/CD workflows, check the `.github/workflows` directory.
